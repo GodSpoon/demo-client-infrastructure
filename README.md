@@ -1,300 +1,238 @@
 # MSP Demo Client Infrastructure
 
-*By Sam King | dev@spoon.rip*
+*Godspoon | dev@spoon.rip*
 
-## Hey there! 👋
+A practical demonstration of how modern MSPs can manage client infrastructure using **OpenTofu**, **GitHub**, and **Scalr** on Google Cloud Platform. This setup leverages GCP's generous Always Free tier, so your demo environments can run at zero cost.
 
-So you want to see how we can **spoon-feed** infrastructure management to clients? You've come to the right place! This repo is my attempt at showing how modern MSPs can stop stirring up chaos and start serving up some seriously smooth infrastructure workflows.
+## Why This Matters
 
-After years of wrestling with client environments (and trust me, some were messier than my kitchen after making soup), I finally found a recipe that works. This demo shows how you can use **OpenTofu**, **GitHub**, and **Scalr** to create something that's actually... *chef's kiss*... manageable.
+### For MSPs:
+- **Version Control Everything**: No more "who changed what when" mysteries
+- **Scale Efficiently**: Manage multiple clients with consistent patterns
+- **Reduce Emergency Calls**: Automated deployments and proper monitoring
+- **Professional Appearance**: Clients see their infrastructure managed as code
+- **Cost Control**: Free tier for demos, predictable scaling for production
 
-## What's Cooking Here?
+### For Clients:
+- **Transparency**: Complete visibility into infrastructure changes
+- **Reliability**: Consistent, tested deployment patterns
+- **Cost-Effective**: Start free, scale up as needed
+- **Growth Ready**: Infrastructure that scales with their business
+- **Documentation**: Everything is tracked and documented
 
-### For Us MSPs:
-- **Stop the Madness**: No more "who changed what when" mysteries
-- **Scale Without Breaking**: Manage 50 clients as easily as 5 (well, almost)
-- **Sleep Better**: Automated deployments mean fewer 3am emergency calls
-- **Look Professional**: Clients love seeing their infrastructure in Git
-- **Save Money**: Catch cost issues before they spoon out of control
-- **Team Harmony**: No more stepping on each other's toes (or configurations)
-
-### For Our Clients:
-- **Transparency**: They can see exactly what we're doing (scary, I know)
-- **Reliability**: No more "works on my machine" deployments
-- **Security**: We follow the same patterns that work for everyone
-- **Growth Ready**: Easy to add more servers when they hit it big
-- **Documentation**: Everything is written down (revolutionary!)
-
-## The Secret Sauce
+## Architecture Overview
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│                 │    │                 │    │                 │
-│   GitHub Repo   │───▶│      Scalr      │───▶│   AWS Account   │
-│                 │    │                 │    │                 │
-│  - All our code │    │  - The brain    │    │ - Where stuff   │
-│  - Change history│    │  - Keeps secrets│    │   actually runs │
-│  - Reviews       │    │  - Runs plans   │    │ - EC2 boxes     │
-│  - Collaboration │    │  - Enforces rules│    │ - Storage       │
-│                 │    │  - Tracks costs │    │ - Networking    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
+│                   │    │                   │    │                   │
+│    GitHub Repo    │──▶│       Scalr       │──▶│   GCP Project     │
+│                   │    │                   │    │                   │
+│  - Infrastructure │    │  - State mgmt     │    │ - Compute Engine  │
+│  - Change history │    │  - Policy enforce │    │ - Cloud Storage   │
+│  - Team reviews   │    │  - Cost tracking  │    │ - VPC Network     │
+│                   │    │  - Automation     │    │ - Monitoring      │
+└───────────────────┘    └───────────────────┘    └───────────────────┘
 ```
 
-## What's Scalr? (And Why Should I Care?)
+## What Gets Built
 
-Okay, so imagine if Terraform had a really smart assistant that handled all the annoying stuff. That's Scalr. It's like having a sous chef who manages all your infrastructure while you focus on the fancy stuff.
+This infrastructure creates a complete web application environment:
 
-Here's what makes it *spoon-derful*:
-- **State Management**: No more "oops I corrupted the state file" moments
-- **Git Integration**: Push code → magic happens → infrastructure appears
-- **Policy Enforcement**: Stops junior devs from spinning up $10k instances
-- **Team Access**: Everyone gets exactly the permissions they need
-- **Cost Estimation**: Know how much you're spending before you spend it
-- **Audit Everything**: Complete paper trail of who touched what
+**Core Resources:**
+- **VPC Network** with custom subnet
+- **Compute Engine Instance** (f1-micro for free tier)
+- **Static IP Address** for consistent access
+- **Cloud Storage Bucket** for backups and files
+- **Firewall Rules** for HTTP and SSH access
+- **Service Account** with appropriate IAM permissions
+- **Cloud Logging** for monitoring and troubleshooting
 
-### The Daily Flow:
-1. **I write** some infrastructure code
-2. **GitHub** stores it and lets my team review it
-3. **Scalr** sees the changes and makes a plan
-4. **Team** says "looks good" or "are you crazy?"
-5. **Scalr** deploys it automatically (if we're feeling brave)
-6. **AWS** gets new shiny resources
-7. **Client** is happy (hopefully)
+**Cost Breakdown:**
+- **Dev Environment**: $0/month (Always Free tier)
+- **Staging**: ~$15/month (small production instance)
+- **Production**: ~$35-50/month (production-ready setup)
 
-## How I Stirred This Together
+## Project Structure
 
 ```
 demo-client-infrastructure/
-├── README.md                   # You are here! 👈
-├── .gitignore                  # Keeps secrets out of Git
-├── main.tf                     # The meat and potatoes
-├── variables.tf                # All the knobs you can turn
-├── outputs.tf                  # The important stuff to remember  
-├── terraform.tf                # Where the magic is configured
-├── environments/               # Different flavors for different needs
-│   ├── dev/
-│   │   └── terraform.tfvars   # "Move fast and break things" settings
-│   ├── staging/
-│   │   └── terraform.tfvars   # "Almost like production" settings
-│   └── prod/
-│       └── terraform.tfvars   # "Don't mess this up" settings
-└── docs/                       # For when I forget how this works
-    ├── architecture.md         # Pretty diagrams
-    └── runbook.md             # "How to fix things at 2am"
+├── main.tf                     # Core infrastructure resources
+├── variables.tf                # Configuration options
+├── outputs.tf                  # Important values and commands
+├── terraform.tf                # Provider configuration
+├── environments/               # Environment-specific settings
+│   ├── dev/terraform.tfvars   # Free tier configuration
+│   ├── staging/terraform.tfvars
+│   └── prod/terraform.tfvars
+└── README.md                   # This file
 ```
 
-## The Ingredients Explained
+## Getting Started
 
-### `main.tf` - The Main Course
-This is where all the real work happens. I've got:
-- A VPC (your own little corner of AWS)
-- Public and private subnets (for the stuff that needs internet and stuff that doesn't)
-- An EC2 server running a simple web page (because everyone loves "Hello World")
-- Security groups (the bouncers of the internet)
-- An S3 bucket (for all your important files)
-- CloudWatch logs (so you know when things go sideways)
+### Prerequisites
 
-**Pro tip**: I try to make everything follow the same naming pattern. Trust me, future you will thank past you when you're managing 20 different clients.
-
-### `variables.tf` - The Spice Rack
-These are all the things you might want to change between clients:
-- `client_name`: Because "client1" isn't very professional
-- `environment`: dev/staging/prod (the holy trinity)
-- `aws_region`: Where you want your stuff to live
-- `instance_type`: How much horsepower you need
-- `ssh_public_key`: Your key to the kingdom (stored safely in Scalr)
-
-### `outputs.tf` - The Serving Suggestion
-After everything deploys, these tell you the important stuff:
-- Where to find your web server
-- How to SSH into it
-- What your S3 bucket is called
-- Ready-to-copy SSH commands (because who has time to type?)
-
-### `terraform.tf` - The Recipe Instructions
-This tells OpenTofu what version to use and how to talk to AWS. Nothing too exciting, but super important. It's like making sure you're using the right type of flour - boring but critical.
-
-### Environment Files - Different Serving Sizes
-- **Dev**: Small portions, fast cooking, don't worry if you burn it
-- **Staging**: Production-sized but with training wheels
-- **Prod**: No mistakes allowed, everything double-checked
-
-## What Actually Gets Built
-
-When you run this, you get a nice little web application setup:
-
-**The Kitchen Equipment:**
-- **1 VPC** - Your own private network space
-- **2 Subnets** - Public (for web stuff) and private (for database stuff later)
-- **1 EC2 Instance** - Running a simple Apache web server
-- **1 Elastic IP** - So the address doesn't change when you restart
-- **Security Groups** - Only letting in the traffic you want
-- **1 S3 Bucket** - For backups and file storage
-- **CloudWatch Logs** - So you can see what's happening
-
-**The Bill:**
-- **Dev Environment**: About $15-25/month (couple of coffees)
-- **Production**: $50-100/month (nice dinner for two)
-
-## Getting Your Hands Dirty
-
-### What You'll Need
-- AWS account (and the keys to it)
-- GitHub account (free is fine)
-- Scalr account (also has a free tier)
-- SSH keys (for getting into your servers)
-- Coffee (optional but recommended)
-
-### The Quick Version
-1. **Clone** this repo
-2. **Fix** the SSH key placeholder (use your actual key!)
-3. **Set up** Scalr workspace
-4. **Add** your AWS credentials to Scalr
-5. **Push** some changes
-6. **Watch** the magic happen
-7. **Try** to look professional when it works
-
-### The "I Want Details" Version
-Check out my [detailed setup guide](./docs/scalr-implementation-guide.md) - it's got screenshots and everything!
-
-## Real-World Examples (AKA "Stuff I Actually Do")
-
-### Adding a Database
+**Install Google Cloud CLI (Arch Linux):**
 ```bash
-# Start a new branch (because main branch is sacred)
-git checkout -b feature/add-database
+# Install from AUR
+yay -S google-cloud-cli
 
-# Add RDS stuff to main.tf
-# Update variables for database settings
-# Add database outputs
-
-git add .
-git commit -m "Add RDS because the client needs to store stuff"
-git push origin feature/add-database
-
-# Make a pull request
-# Scalr shows what's going to change
-# Team reviews (hopefully quickly)
-# Merge and watch it deploy
+# Alternative: Install from official package
+curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz
+tar -xf google-cloud-cli-linux-x86_64.tar.gz
+./google-cloud-sdk/install.sh
 ```
 
-### "The Server is On Fire" Emergency
+**Initialize and Login:**
 ```bash
-# When everything is broken and clients are calling
-git checkout -b hotfix/security-group-emergency
+# Initialize gcloud
+gcloud init
 
-# Make the minimal fix needed
-# Commit with sweaty palms
-# Skip the usual review process (just this once!)
-# Deploy and pray
-# Schedule proper fix for later
+# Login to your Google account
+gcloud auth login
+
+# Set default project (replace with your project ID)
+gcloud config set project YOUR_PROJECT_ID
+
+# Enable application default credentials for Terraform
+gcloud auth application-default login
 ```
 
-### Moving from Staging to Production
+### GCP Project Setup
+
+**Enable Required APIs:**
 ```bash
-# Copy the working staging config
-cp environments/staging/terraform.tfvars environments/prod/
-# Beef up the instance sizes and storage
-# Make sure backup retention is longer
-# Triple-check security settings
-# Get three people to review it
-# Deploy very carefully
+gcloud services enable compute.googleapis.com
+gcloud services enable storage.googleapis.com
+gcloud services enable logging.googleapis.com
 ```
 
-## Security Stuff (Because Getting Hacked Sucks)
-
-### Infrastructure Security
-- **Network Isolation**: Bad guys can't get to your database from the internet
-- **Minimal Access**: Only open the ports you actually need
-- **Encryption**: Everything stored in S3 is encrypted (just in case)
-- **SSH Restrictions**: Only your office IP can SSH in (adjust for remote work)
-
-### Operational Security
-- **Secret Management**: AWS keys live in Scalr, not in Git
-- **State File Protection**: Scalr keeps your Terraform state safe and backed up
-- **Change Tracking**: Every single change is logged and auditable
-- **Policy Guards**: Scalr can stop people from doing expensive or dangerous things
-
-## Scaling This to Multiple Clients
-
-The beauty of this setup is that once you get it working for one client, you can **spoon** it out to as many as you want:
-
-### How I Organize Workspaces
-```
-My MSP Account
-├── ACME-Corp/
-│   ├── acme-dev
-│   ├── acme-staging  
-│   └── acme-prod
-├── Widget-Co/
-│   ├── widget-dev
-│   └── widget-prod
-└── Internal/
-    ├── monitoring
-    └── billing-reports
+**Create Service Account for Scalr:**
+```bash
+gcloud iam service-accounts create scalr-terraform \
+    --display-name="Scalr Terraform Service Account"
 ```
 
-### Why This Rocks
-- **Copy-Paste Success**: New client setup takes hours, not weeks
-- **Consistent Quality**: Everyone gets the same tested, reliable foundation
-- **Easier Support**: When you've seen one, you've seen them all
-- **Better Margins**: Less time debugging means more time growing
+**Grant Necessary Permissions:**
+```bash
+# Replace PROJECT_ID with your actual project ID
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:scalr-terraform@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/compute.admin"
 
-## Keeping the Wheels On
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:scalr-terraform@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/storage.admin"
 
-### What Scalr Tracks for You
-- **Every Change**: Who changed what and when
-- **Cost Trends**: Is this month more expensive than last month?
-- **Policy Violations**: Someone tried to launch a 32-core instance in dev
-- **Team Activity**: Sarah has been busy this week
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:scalr-terraform@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/logging.admin"
+```
 
-### My Monthly Routine
-- **Week 1**: Check for any failed runs or policy violations
-- **Week 2**: Review costs and see if anyone's getting spoon-happy with resources
-- **Week 3**: Update OpenTofu versions and security policies
-- **Week 4**: Plan capacity for growing clients
+**Create Service Account Key:**
+```bash
+gcloud iam service-accounts keys create scalr-key.json \
+    --iam-account=scalr-terraform@PROJECT_ID.iam.gserviceaccount.com
+```
 
-## When Things Go Wrong (And They Will)
+### Repository Setup
 
-### Common "Oops" Moments
-- **"State is locked"**: Someone else is running a deployment, wait your turn
-- **"Access denied"**: Check your AWS keys or security group rules
-- **"Plan failed"**: Usually a typo in the Terraform code
-- **"Why is this so expensive?"**: Someone probably picked the wrong instance size
+1. **Clone this repository**
+2. **Update `environments/dev/terraform.tfvars`** with your project ID
+3. **Configure Scalr workspace** with the service account key
+4. **Set sensitive variables** in Scalr:
+   - `ssh_public_key`: Your SSH public key
+   - `msp_ip_range`: Your office IP range (for SSH access)
+5. **Push changes** and watch Scalr deploy your infrastructure
 
-### Who to Blame (Just Kidding!)
-- **Me**: Check the [Scalr docs](https://scalr.com/docs) first
-- **OpenTofu Team**: Their [docs](https://opentofu.org/docs) are pretty good
-- **AWS**: [Their docs](https://docs.aws.amazon.com) are... comprehensive
-- **Stack Overflow**: Where all developers go to feel dumb
+## Environment Configuration
 
-## Contributing (AKA "Making This Better")
+### Development (Free Tier)
+- **Machine Type**: f1-micro (free)
+- **Disk**: 10GB persistent disk
+- **Storage**: 5GB Cloud Storage
+- **Cost**: $0/month
 
-### House Rules
-1. **Branch everything**: Main branch is for working code only
-2. **Write good commit messages**: "Fixed stuff" doesn't help anyone
-3. **Test in dev first**: Don't be the person who breaks production
-4. **Get reviews**: Two sets of eyes catch more bugs
-5. **Watch deployments**: Make sure your change actually worked
+### Staging 
+- **Machine Type**: e2-small
+- **Disk**: 20GB persistent disk
+- **Cost**: ~$15/month
 
-### Coding Standards (So We Don't Hate Each Other)
-- Name things consistently: `${client_name}-${environment}-${what_it_is}`
-- Tag everything for billing: Finance will thank you
-- Comment your security group rules: Future you will thank you
-- Document any manual steps: Operations will thank you
+### Production
+- **Machine Type**: n1-standard-1
+- **Disk**: 50GB persistent disk
+- **Enhanced monitoring and backup**
+- **Cost**: ~$35-50/month
 
-## The End Credits
+## Security Considerations
 
-This whole thing started because I got tired of manually configuring the same infrastructure over and over again. Now it's a **spoontaneous** deployment every time someone pushes to Git.
+- **Network Isolation**: VPC with custom subnets
+- **Firewall Rules**: Minimal required access (HTTP, SSH from your IP)
+- **Service Accounts**: Least privilege access
+- **Secret Management**: Sensitive data stored in Scalr, not Git
+- **Audit Trail**: Complete change history in Git and Scalr
 
-If you have questions, complaints, or just want to chat about infrastructure, hit me up at **dev@spoon.rip**. I promise I don't bite (much).
+## Free Tier Limits
+
+**Always Free Resources:**
+- 1 f1-micro Compute Engine instance (US regions only)
+- 30GB persistent disk storage
+- 5GB Cloud Storage (regional)
+- 1GB network egress per month
+- Static IP (when attached to running instance)
+
+**Supported Regions for Free Tier:**
+- us-central1 (Iowa)
+- us-east1 (South Carolina)  
+- us-west1 (Oregon)
+
+## Scaling to Multiple Clients
+
+Each client gets their own GCP project, providing:
+- **Isolated billing** and resource quotas
+- **Independent free tier** allowances
+- **Clear security boundaries**
+- **Simplified management** through consistent patterns
+
+The same Terraform code works across all environments - just different variable values and project targets.
+
+## Common Operations
+
+**SSH to instance:**
+```bash
+ssh ubuntu@INSTANCE_IP
+```
+
+**Upload files to storage:**
+```bash
+gsutil cp myfile.txt gs://BUCKET_NAME/
+```
+
+**View logs:**
+```bash
+gcloud logging read 'resource.type="gce_instance"' --limit=10
+```
+
+**Check costs:**
+```bash
+gcloud billing budgets list
+```
+
+## Troubleshooting
+
+**Instance won't start?** Check if you're in a free tier region and haven't exceeded the f1-micro limit.
+
+**Permission denied?** Verify the service account has the required IAM roles.
+
+**API errors?** Ensure all required APIs are enabled in your project.
+
+**High costs?** Make sure you're using f1-micro instances and staying within free tier limits.
+
+## Support
+
+This infrastructure pattern scales from free demos to enterprise production. Once you've got the basics working, it's easy to spoon-feed additional clients into the same proven workflow.
+
+Questions? Reach out at **dev@spoon.rip** 
 
 ---
 
-*P.S. - If you found this helpful, star the repo! It makes me feel good about the hours I spent writing Terraform instead of sleeping.*
-
-**Built with ❤️ and way too much coffee by Sam King**
-
----
-
-*"Give a person a server, and they'll ask for root access. Teach them Infrastructure as Code, and they'll automate themselves out of manual work."* - Ancient DevOps Proverb (probably)
+*Built with Infrastructure as Code by godspoon*

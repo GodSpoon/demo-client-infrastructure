@@ -6,18 +6,79 @@
 *.tfplan
 *.tfplan.*
 
-# Sensitive files
-*.pem
-*.key
+# Variable files with sensitive data
 terraform.tfvars
 *.auto.tfvars
+
+# Google Cloud sensitive files
+*.json                    # Service account keys
+service-account-*.json
+gcp-credentials.json
+application_default_credentials.json
+scalr-key.json
+
+# SSH keys and certificates
+*.pem
+*.key
+*.pub
+id_rsa*
+id_ed25519*
+
+# Google Cloud SDK
+.gcloud/
+.config/gcloud/
 
 # OS files
 .DS_Store
 Thumbs.db
+*.tmp
+*.swp
 
 # IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Log files
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Coverage and test files
+coverage/
+*.cover
+.pytest_cache/
+
+# Node.js (if using any JS tools)
+node_modules/
+npm-debug.log*
+
+# Python (if using any Python tools)
+__pycache__/
+*.pyc
+*.pyo
+.python-version
+
+# Local development
+.local/
+tmp/
+temp/
+
+# Documentation builds
+site/
+docs/_build/
+
+# Editor temporary files
+.#*
+\#*#
