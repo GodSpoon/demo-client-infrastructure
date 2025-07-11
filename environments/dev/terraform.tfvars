@@ -5,7 +5,7 @@ client_name    = "demo-client"
 environment    = "dev"
 
 # Google Cloud Configuration
-gcp_project_id = "your-project-id-here"  # Replace with your actual GCP project ID
+gcp_project_id = "opentf"  # Replace with your actual GCP project ID
 gcp_region     = "us-central1"            # Free tier region
 
 # Compute Configuration (Free Tier)
@@ -13,7 +13,7 @@ machine_type   = "f1-micro"               # Free: 1 f1-micro instance per month
 disk_size_gb   = 10                       # Free: Up to 30GB persistent disk
 preemptible    = false                    # Don't use preemptible for demo stability
 
-# Storage Configuration
+# Storage Configurationca
 storage_class  = "STANDARD"               # Free: 5GB regional storage
 
 # Network Configuration
