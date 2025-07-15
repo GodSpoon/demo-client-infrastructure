@@ -7,11 +7,11 @@ A practical demonstration of how modern MSPs can manage client infrastructure us
 ## Why This Matters
 
 ### For MSPs:
-- **Version Control Everything**: No more "who changed what when" mysteries
-- **Scale Efficiently**: Manage multiple clients with consistent patterns
+- **Version Control Everything**: No more "who changed what when" nightmares
+- **Scale Efficiently**: Manage multiple clients consistently
 - **Reduce Emergency Calls**: Automated deployments and proper monitoring
 - **Professional Appearance**: Clients see their infrastructure managed as code
-- **Cost Control**: Free tier for demos, predictable scaling for production
+- **Cost Control**: Predictable scaling/billing
 
 ### For Clients:
 - **Transparency**: Complete visibility into infrastructure changes
@@ -22,16 +22,10 @@ A practical demonstration of how modern MSPs can manage client infrastructure us
 
 ## Architecture Overview
 
-```
-┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
-│                   │    │                   │    │                   │
-│    GitHub Repo    │──▶│       Scalr       │──▶│   GCP Project     │
-│                   │    │                   │    │                   │
-│  - Infrastructure │    │  - State mgmt     │    │ - Compute Engine  │
-│  - Change history │    │  - Policy enforce │    │ - Cloud Storage   │
-│  - Team reviews   │    │  - Cost tracking  │    │ - VPC Network     │
-│                   │    │  - Automation     │    │ - Monitoring      │
-└───────────────────┘    └───────────────────┘    └───────────────────┘
+```mermaid
+flowchart LR
+    A[<b>GitHub Repo</b><br/>- Infrastructure<br/>- Change history<br/>- Team reviews] --> B[<b>Scalr</b><br/>- Variables<br/>- State mgmt<br/>- Policy enforce<br/>- Cost tracking<br/>- Automation]
+    B --> C[<b>GCP Project</b><br/>- Compute Engine<br/>- Cloud Storage<br/>- VPC Network<br/>- Monitoring]
 ```
 
 ## What Gets Built
