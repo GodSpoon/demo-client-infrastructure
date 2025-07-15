@@ -2,22 +2,20 @@
 
 *Godspoon | dev@spoon.rip*
 
-A practical demonstration of how modern MSPs can manage client infrastructure using **OpenTofu**, **GitHub**, and **Scalr** on Google Cloud Platform. This setup leverages GCP's generous Always Free tier, so your demo environments can run at zero cost.
+This is a simple demo of how an MSP could define/manage client infrastructure using **OpenTofu**, **GitHub**, and **Scalr** on Google Cloud Platform. This setup leverages GCP's generous Always Free tier, so your demo environments can run at zero cost.
 
 ## Why This Matters
 
 ### For MSPs:
 - **Version Control Everything**: No more "who changed what when" nightmares
+- **Uniformity & Simplicity**: Entire organizations or packages can be defined, deployed & maintained from a few files
 - **Scale Efficiently**: Manage multiple clients consistently
-- **Reduce Emergency Calls**: Automated deployments and proper monitoring
-- **Professional Appearance**: Clients see their infrastructure managed as code
 - **Cost Control**: Predictable scaling/billing
 
 ### For Clients:
 - **Transparency**: Complete visibility into infrastructure changes
 - **Reliability**: Consistent, tested deployment patterns
-- **Cost-Effective**: Start free, scale up as needed
-- **Growth Ready**: Infrastructure that scales with their business
+- **Growth Ready**: Infrastructure that can scale with their business
 - **Documentation**: Everything is tracked and documented
 
 ## Architecture Overview
@@ -33,13 +31,15 @@ flowchart LR
 This infrastructure creates a complete web application environment:
 
 **Resources:**
-- **VPC Network** with custom subnet
-- **Compute Engine Instance** (f1-micro for free tier)
-- **Static IP Address**
-- **Cloud Storage Bucket** for backups and files
-- **Firewall Rules** for HTTP and SSH access
-- **Service Account** with appropriate IAM permissions
-- **Cloud Logging** for monitoring and troubleshooting
+- VPC network with private subnet (10.0.1.0/24)
+- Firewall rules (HTTP/HTTPS public, SSH restricted to MSP IPs)
+- Static external IP address
+- Ubuntu compute instance with Apache web server & simple web page
+- Service account with logging/monitoring permissions
+- Storage bucket with lifecycle policy and versioning
+- Log sink capturing application/system logs to storage bucket
+- IAM bindings for GCP service account permissions
+- Sample files (branded web page, README in GCP bucket viewable on Scalr)
 
 ## Project Structure
 
@@ -141,17 +141,6 @@ gcloud iam service-accounts keys create scalr-key.json \
 - **Storage**: 5GB Cloud Storage
 - **Cost**: $0/month
 
-### Staging 
-- **Machine Type**: e2-small
-- **Disk**: 20GB persistent disk
-- **Cost**: ~$15/month
-
-### Production
-- **Machine Type**: n1-standard-1
-- **Disk**: 50GB persistent disk
-- **Enhanced monitoring and backup**
-- **Cost**: ~$35-50/month
-
 ## Security Considerations
 
 - **Network Isolation**: VPC with custom subnets
@@ -173,18 +162,9 @@ gcloud iam service-accounts keys create scalr-key.json \
 - us-central1 (Iowa)
 - us-east1 (South Carolina)  
 - us-west1 (Oregon)
-
-## Scaling to Multiple Clients
-
-Each client gets their own GCP project, providing:
-- **Isolated billing** and resource quotas
-- **Independent free tier** allowances
-- **Clear security boundaries**
-- **Simplified management** through consistent patterns
-
 The same Terraform code works across all environments - just different variable values and project targets.
 
-## Common Operations
+## Common/Easy Operations After Deployment
 
 **SSH to instance:**
 ```bash
@@ -205,23 +185,3 @@ gcloud logging read 'resource.type="gce_instance"' --limit=10
 ```bash
 gcloud billing budgets list
 ```
-
-## Troubleshooting
-
-**Instance won't start?** Check if you're in a free tier region and haven't exceeded the f1-micro limit.
-
-**Permission denied?** Verify the service account has the required IAM roles.
-
-**API errors?** Ensure all required APIs are enabled in your project.
-
-**High costs?** Make sure you're using f1-micro instances and staying within free tier limits.
-
-## Support
-
-This infrastructure pattern scales from free demos to enterprise production. Once you've got the basics working, it's easy to spoon-feed additional clients into the same proven workflow.
-
-Questions? Reach out at **dev@spoon.rip** 
-
----
-
-*Built with Infrastructure as Code by godspoon*
