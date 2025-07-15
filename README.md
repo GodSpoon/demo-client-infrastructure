@@ -32,19 +32,14 @@ flowchart LR
 
 This infrastructure creates a complete web application environment:
 
-**Core Resources:**
+**Resources:**
 - **VPC Network** with custom subnet
 - **Compute Engine Instance** (f1-micro for free tier)
-- **Static IP Address** for consistent access
+- **Static IP Address**
 - **Cloud Storage Bucket** for backups and files
 - **Firewall Rules** for HTTP and SSH access
 - **Service Account** with appropriate IAM permissions
 - **Cloud Logging** for monitoring and troubleshooting
-
-**Cost Breakdown:**
-- **Dev Environment**: $0/month (Always Free tier)
-- **Staging**: ~$15/month (small production instance)
-- **Production**: ~$35-50/month (production-ready setup)
 
 ## Project Structure
 
@@ -56,9 +51,9 @@ demo-client-infrastructure/
 ├── terraform.tf                # Provider configuration
 ├── environments/               # Environment-specific settings
 │   ├── dev/terraform.tfvars   # Free tier configuration
-│   ├── staging/terraform.tfvars
-│   └── prod/terraform.tfvars
-└── README.md                   # This file
+│   ├── staging/terraform.tfvars  # In theory
+│   └── prod/terraform.tfvars  # In theory
+└── README.md                   # This file lol
 ```
 
 ## Getting Started
