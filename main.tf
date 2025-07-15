@@ -86,14 +86,14 @@ locals {
     </head>
     <body>
         <div class="container">
-            <h1><span class="spoon">🥄</span> Welcome to ${var.client_name}</h1>
+            <h1><span class="spoon">!</span> Welcome to ${var.client_name}</h1>
             <h2>Environment: ${var.environment}</h2>
-            <p>This infrastructure is managed by your MSP using OpenTofu and Scalr!</p>
+            <p>This infrastructure is managed by your MSP using OpenTofu and Scalr</p>
             <p>Deployed on: $(date)</p>
             <p>Instance: $(hostname)</p>
             <p>Region: ${var.gcp_region}</p>
             <hr>
-            <p><em>Spoon-fed infrastructure, just the way you like it! 🥄</em></p>
+            <p><em></em></p>
         </div>
     </body>
     </html>
